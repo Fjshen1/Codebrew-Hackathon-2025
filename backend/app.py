@@ -1,21 +1,39 @@
 import os
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 
 # Initialize Flask with static folder pointing to React's build output
 global_app = Flask(
     __name__,
     static_folder=os.path.join(os.path.dirname(__file__), '../frontend/build'),
-    static_url_path='/'  # serve static files at root
+    static_url_path='/'
 )
 app = global_app
 CORS(app)
 
-# In-memory storage of professionals
-professionals = []
-_next_id = 1
+# Database Configuration
+db_url = os.environ.get('DATABASE_URL')
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+global_app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+global_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(global_app)
+
+# Database Model
+class Professional(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    profession = db.Column(db.String(100), nullable=False)
+    lat = db.Column(db.Float, nullable=False)
+    lng = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Utility function
 def haversine(lat1, lon1, lat2, lon2):
     """Return distance in kilometers between two lat/lng points."""
     R = 6371  # Earth radius in km
@@ -35,18 +53,16 @@ def greet():
 
 @app.route("/api/professionals", methods=["POST"])
 def register_professional():
-    global _next_id
     data = request.get_json()
-    prof = {
-        "id":         _next_id,
-        "name":       data["name"],
-        "profession": data["profession"],
-        "lat":        data["lat"],
-        "lng":        data["lng"],
-    }
-    professionals.append(prof)
-    _next_id += 1
-    return jsonify(id=prof["id"]), 201
+    prof = Professional(
+        name=data["name"],
+        profession=data["profession"],
+        lat=data["lat"],
+        lng=data["lng"]
+    )
+    db.session.add(prof)
+    db.session.commit()
+    return jsonify(id=prof.id), 201
 
 @app.route("/api/search", methods=["POST"])
 def search_professionals():
@@ -54,18 +70,18 @@ def search_professionals():
     target_prof = data["profession"]
     user_lat, user_lng = data["lat"], data["lng"]
 
-    # filter by profession and compute distance
     matches = []
-    for p in professionals:
-        if p["profession"] == target_prof:
-            dist = round(haversine(user_lat, user_lng, p["lat"], p["lng"]), 2)
-            matches.append({
-                "id": p["id"],
-                "name": p["name"],
-                "profession": p["profession"],
-                "distance_km": dist
-            })
-    # sort nearest first
+    pros = Professional.query.filter_by(profession=target_prof).all()
+    for p in pros:
+        dist = round(haversine(user_lat, user_lng, p.lat, p.lng), 2)
+        matches.append({
+            "id": p.id,
+            "name": p.name,
+            "profession": p.profession,
+            "distance_km": dist,
+            "created_at": p.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+
     matches.sort(key=lambda x: x["distance_km"])
     return jsonify(matches)
 

@@ -262,3 +262,6 @@ def delete_user(user_id):
         db.session.delete(user)
         db.session.commit()
         return True
+    
+if __name__ == "__main__":
+    initialize_database()
