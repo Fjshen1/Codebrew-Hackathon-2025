@@ -15,8 +15,10 @@ app = global_app
 CORS(app)
 
 # Database Configuration
-db_url = os.environ.get('DATABASE_URL')
-if db_url and db_url.startswith("postgres://"):
+# Use Heroku DATABASE_URL if present, otherwise fall back to local SQLite
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+# SQLAlchemy requires postgresql:// scheme instead of postgres://
+if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 global_app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -33,20 +35,17 @@ class Professional(db.Model):
     lng = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# Utility function
+# Utility function to compute distance
 def haversine(lat1, lon1, lat2, lon2):
-    """Return distance in kilometers between two lat/lng points."""
     R = 6371  # Earth radius in km
     φ1, φ2 = radians(lat1), radians(lat2)
     Δφ = radians(lat2 - lat1)
     Δλ = radians(lon2 - lon1)
-
     a = sin(Δφ/2)**2 + cos(φ1) * cos(φ2) * sin(Δλ/2)**2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
 # --- API ROUTES ---
-
 @app.route("/api/greet")
 def greet():
     return jsonify(message="Hello from Flask!")
@@ -81,12 +80,10 @@ def search_professionals():
             "distance_km": dist,
             "created_at": p.created_at.strftime('%Y-%m-%d %H:%M:%S')
         })
-
     matches.sort(key=lambda x: x["distance_km"])
     return jsonify(matches)
 
 # --- REACT FRONTEND ROUTES ---
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
@@ -97,6 +94,9 @@ def serve_react(path):
     return send_from_directory(build_dir, 'index.html')
 
 if __name__ == "__main__":
-    # Use PORT env provided by Heroku, default to 5000
     port = int(os.environ.get("PORT", 5000))
+    # Create tables if running locally
+    if db_url.startswith('sqlite'):
+        with global_app.app_context():
+            db.create_all()
     app.run(host='0.0.0.0', port=port)
