@@ -11,20 +11,18 @@ export default function CommunityConnect() {
             <span>Community Connect</span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            <Link to="#" className="text-sm font-medium hover:underline">
+            <a href="#about" className="text-sm font-medium hover:underline">
               About
-            </Link>
-            <Link to="#" className="text-sm font-medium hover:underline">
-              Resources
-            </Link>
-            <Link to="#" className="text-sm font-medium hover:underline">
-              Contact
-            </Link>
+            </a>
+            <a href="#howitworks" className="text-sm font-medium hover:underline">
+              How it works
+            </a>
+
           </nav>
         </div>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-rose-50">
+        <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-rose-50">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -99,7 +97,7 @@ export default function CommunityConnect() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+        <section id="howitworks" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -163,69 +161,7 @@ export default function CommunityConnect() {
               A community-driven platform to connect and share resources during crisis.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:flex-1">
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Platform</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Safety Guidelines
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Community Rules
-                  </Link>
-                </li>
-              </ul>
             </div>
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Resources</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Emergency Contacts
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Aid Organizations
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Health Information
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Contact</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Report an Issue
-                  </Link>
-                </li>
-                <li>
-                  <Link to="#" className="text-gray-500 hover:underline">
-                    Volunteer
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
         <div className="border-t py-6 text-center text-sm text-gray-500">
           <p>© {new Date().getFullYear()} Community Connect. All rights reserved.</p>
         </div>
