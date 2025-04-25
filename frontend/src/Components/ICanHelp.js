@@ -39,7 +39,7 @@ function handleHelpOfferSubmit(e) {
         {/* Form Navigation */}
         <div className="flex rounded-md shadow-sm mb-8" role="group">
           <Link
-            to="/i-need-help"
+            to="/INeedHelp"
             className="flex-1 py-4 px-4 text-sm font-medium rounded-l-lg border bg-white text-gray-700 border-gray-300 hover:bg-gray-50 flex justify-center items-center"
           >
             <Utensils className="mr-2 h-5 w-5" />I Need Help

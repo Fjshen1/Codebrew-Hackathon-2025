@@ -3,8 +3,8 @@ import FindProfessional from './FindProfessional';
 import OfferService     from './OfferService';
 import './App.css';
 import HomePage from './Components/HomePage';
+import INeedHelp from './Components/INeedHelp';
 import ICanHelp from './Components/ICanHelp';
-import { Home } from 'lucide-react';
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage/>} />
         <Route path="/ICanHelp"  element={<ICanHelp />} />
+        <Route path="/INeedHelp"  element={<INeedHelp />} />
         <Route path="/find"  element={<FindProfessional />} />
         <Route path="/offer" element={<OfferService />} />
         {/* <Route
