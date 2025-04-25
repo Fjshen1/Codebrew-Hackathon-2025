@@ -1,8 +1,15 @@
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from math import radians, sin, cos, sqrt, atan2
 
-app = Flask(__name__)
+# Initialize Flask with static folder pointing to React's build output
+global_app = Flask(
+    __name__,
+    static_folder=os.path.join(os.path.dirname(__file__), '../frontend/build'),
+    static_url_path='/'  # serve static files at root
+)
+app = global_app
 CORS(app)
 
 # In-memory storage of professionals
@@ -20,16 +27,14 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
+# --- API ROUTES ---
+
 @app.route("/api/greet")
 def greet():
     return jsonify(message="Hello from Flask!")
 
 @app.route("/api/professionals", methods=["POST"])
 def register_professional():
-    """
-    Body JSON: { name, profession, lat, lng }
-    Returns: { id }
-    """
     global _next_id
     data = request.get_json()
     prof = {
@@ -45,29 +50,37 @@ def register_professional():
 
 @app.route("/api/search", methods=["POST"])
 def search_professionals():
-    """
-    Body JSON: { profession, lat, lng }
-    Returns: [ { id, name, profession, distance_km }, … ]
-    """
     data = request.get_json()
     target_prof = data["profession"]
     user_lat, user_lng = data["lat"], data["lng"]
 
-    # filter by profession
-    matches = [
-        {
-            "id":          p["id"],
-            "name":        p["name"],
-            "profession":  p["profession"],
-            "distance_km": round(haversine(user_lat, user_lng, p["lat"], p["lng"]), 2)
-        }
-        for p in professionals
-        if p["profession"] == target_prof
-    ]
-
+    # filter by profession and compute distance
+    matches = []
+    for p in professionals:
+        if p["profession"] == target_prof:
+            dist = round(haversine(user_lat, user_lng, p["lat"], p["lng"]), 2)
+            matches.append({
+                "id": p["id"],
+                "name": p["name"],
+                "profession": p["profession"],
+                "distance_km": dist
+            })
     # sort nearest first
     matches.sort(key=lambda x: x["distance_km"])
     return jsonify(matches)
 
+# --- REACT FRONTEND ROUTES ---
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    build_dir = app.static_folder
+    file_path = os.path.join(build_dir, path)
+    if path and os.path.exists(file_path):
+        return send_from_directory(build_dir, path)
+    return send_from_directory(build_dir, 'index.html')
+
 if __name__ == "__main__":
-    app.run()
+    # Use PORT env provided by Heroku, default to 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
