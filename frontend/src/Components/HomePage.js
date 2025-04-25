@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom"
 import { Heart, Utensils } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export default function CommunityConnect() {
+ const navigate = useNavigate();
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900">
       <header className="border-b">
@@ -34,10 +36,10 @@ export default function CommunityConnect() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                <button className="inline-flex items-center justify-center rounded-md bg-rose-600 hover:bg-rose-700 text-white px-8 py-6 text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2">
+                <button  className="inline-flex items-center justify-center rounded-md bg-rose-600 hover:bg-rose-700 text-white px-8 py-6 text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2">
                   <Utensils className="mr-2 h-5 w-5" />I Need Help
                 </button>
-                <button className="inline-flex items-center justify-center rounded-md border border-rose-600 text-rose-600 hover:bg-rose-50 px-8 py-6 text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2">
+                <button onClick={() => {navigate("/ICanHelp")}} className="inline-flex items-center justify-center rounded-md border border-rose-600 text-rose-600 hover:bg-rose-50 px-8 py-6 text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2">
                   <Heart className="mr-2 h-5 w-5" />I Can Help
                 </button>
               </div>

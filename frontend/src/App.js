@@ -3,6 +3,8 @@ import FindProfessional from './FindProfessional';
 import OfferService     from './OfferService';
 import './App.css';
 import HomePage from './Components/HomePage';
+import ICanHelp from './Components/ICanHelp';
+import { Home } from 'lucide-react';
 
 function App() {
   return (
@@ -12,8 +14,9 @@ function App() {
         <Link to="/offer">I Can Help</Link>
       </nav> */}
       
-      <HomePage/>
       <Routes>
+        <Route path="/" element={<HomePage/>} />
+        <Route path="/ICanHelp"  element={<ICanHelp />} />
         <Route path="/find"  element={<FindProfessional />} />
         <Route path="/offer" element={<OfferService />} />
         {/* <Route
