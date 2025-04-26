@@ -22,20 +22,20 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 # Configure the SQLAlchemy database
-<<<<<<< HEAD
+
 # Use Heroku DATABASE_URL if present, otherwise fall back to local SQLite
 db_url = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
 # SQLAlchemy expects the postgresql:// scheme
 if db_url.startswith('postgres://'):
     db_url = db_url.replace('postgres://', 'postgresql://', 1)
-=======
+
 # Ensure we handle Heroku's PostgreSQL URL format correctly
 db_url = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
 # Fix for Heroku PostgreSQL URL format
 if db_url.startswith('postgres://'):
     db_url = db_url.replace('postgres://', 'postgresql://', 1)
 
->>>>>>> abe1496 (database deployment)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -51,12 +51,12 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     role = db.Column(db.String, nullable=False)  # 'client' or 'pro'
-<<<<<<< HEAD
+
     profile = db.relationship('Profile', uselist=False, backref='user')
-=======
+
     # One-to-one relationship: each user has one profile
     profile = db.relationship('Profile', uselist=False, backref='user', cascade='all, delete-orphan')
->>>>>>> abe1496 (database deployment)
+
 
 class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -120,9 +120,7 @@ def add_user(email, password, name, role, is_advertiser=False, professions=None,
 
 # ... other CRUD functions ...
 
-<<<<<<< HEAD
-def delete_user(user_id):
-=======
+
 def get_user_by_email(email):
     """
     Get user by email
@@ -226,7 +224,7 @@ def update_user(user_id, data):
     Returns:
         bool: True if successful
     """
->>>>>>> abe1496 (database deployment)
+
     with app.app_context():
         user = User.query.get(user_id)
         if not user:
@@ -235,11 +233,11 @@ def update_user(user_id, data):
         db.session.commit()
         return True
 
-<<<<<<< HEAD
+
 # Allow the script to be run directly to initialize the database
 if __name__ == '__main__':
     initialize_database()
-=======
+
 def delete_user(user_id):
     """
     Delete a user and their profile
@@ -384,4 +382,4 @@ if __name__ == '__main__':
         # Local development
         initialize_database()
         app.run(debug=True)
->>>>>>> abe1496 (database deployment)
+
